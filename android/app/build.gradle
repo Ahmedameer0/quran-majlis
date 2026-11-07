@@ -2,7 +2,7 @@ plugins {
     id 'com.android.application' version '8.5.2'
 }
 
-def buildNumber = (System.getenv('GITHUB_RUN_NUMBER') ?: '1').toInteger()
+def buildNumber = (System.getenv('APP_BUILD_NUMBER') ?: System.getenv('GITHUB_RUN_NUMBER') ?: '1').toInteger()
 
 android {
     namespace 'com.ahmedameer.quranmajlis'
