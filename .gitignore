@@ -1,0 +1,6 @@
+.claude/
+CLAUDE.md
+__pycache__/
+*.pyc
+data/tafsir/mizan/
+data/local-sources.js

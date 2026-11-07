@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>عرض القرآن - مجالس رمضان</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b1324">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/app.css?v=12">
+</head>
+<body>
+<div id="app">
+  <header id="bar">
+    <div class="bar-info">
+      <span id="barSurah" class="bar-surah"></span>
+      <span id="barMeta" class="bar-meta"></span>
+    </div>
+    <nav class="bar-actions" aria-label="الأدوات">
+      <button data-act="install" hidden>تثبيت</button>
+      <button data-act="tafsir">تفسير</button>
+      <button data-act="search">بحث في السورة</button>
+      <button data-act="index">الفهرس</button>
+      <button data-act="map">خريطة الختمة</button>
+      <button data-act="size">حجم الخط</button>
+      <button data-act="mark" aria-pressed="true">تحديد الآية</button>
+      <button data-act="theme">الوضع</button>
+      <button data-act="finish">إنهاء الجلسة</button>
+    </nav>
+  </header>
+
+  <main id="stage">
+    <div class="frame" aria-hidden="true"></div>
+    <button class="nav-btn nav-prev" data-nav="prev" aria-label="الآية السابقة" title="الآية السابقة"><i></i></button>
+    <button class="nav-btn nav-next" data-nav="next" aria-label="الآية التالية" title="الآية التالية"><i></i></button>
+    <div id="viewport">
+      <div id="sheet">
+        <div id="hl"></div>
+        <div id="rows"></div>
+        <div id="dot"></div>
+      </div>
+    </div>
+  </main>
+
+  <div id="progress"><i></i></div>
+</div>
+
+<div id="overlay" hidden></div>
+<div id="toast" hidden></div>
+<div id="offline" hidden></div>
+<div id="loading">جارٍ تحميل المصحف…</div>
+
+<script src="js/store.js?v=12"></script>
+<script src="js/data.js?v=12"></script>
+<script src="data/local-sources.js"></script>
+<script src="data/quran.js"></script>
+<script src="js/mushaf.js?v=12"></script>
+<script src="js/panels.js?v=12"></script>
+<script src="js/app.js?v=12"></script>
+<script src="js/pwa.js?v=12"></script>
+</body>
+</html>
