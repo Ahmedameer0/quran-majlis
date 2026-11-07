@@ -1,0 +1,41 @@
+plugins {
+    id 'com.android.application' version '8.5.2'
+}
+
+def buildNumber = (System.getenv('GITHUB_RUN_NUMBER') ?: '1').toInteger()
+
+android {
+    namespace 'com.ahmedameer.quranmajlis'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.ahmedameer.quranmajlis'
+        minSdk 21
+        targetSdk 34
+        versionCode buildNumber
+        versionName "1.0.${buildNumber}"
+    }
+
+    // المفتاح وكلمة مروره من أسرار GitHub، ولا يوضعان في المستودع أبداً
+    signingConfigs {
+        release {
+            storeFile file(System.getenv('SIGNING_KEYSTORE'))
+            storeType 'pkcs12'
+            storePassword System.getenv('SIGNING_PASSWORD')
+            keyAlias 'majlis'
+            keyPassword System.getenv('SIGNING_PASSWORD')
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}

@@ -325,6 +325,19 @@ var App = (function () {
     try { history.pushState({ guard: 1 }, ''); } catch (e) { /* غير متاح في بعض سياقات file:// */ }
   }
 
+  // زر الرجوع في تطبيق التلفزيون: يُرجع true إذا عالجته الصفحة
+  window.androidBack = function () {
+    if (Panels.isOpen()) {
+      Panels.close();
+      return true;
+    }
+    if (wordMode) {
+      exitWordMode();
+      return true;
+    }
+    return clearRoots();
+  };
+
   var lastBack = 0;
   function onRootBack() {
     if (wordMode) {

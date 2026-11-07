@@ -7,8 +7,9 @@ import json
 import os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SKIP_DIRS = {'.git', '.claude', 'tools', '__pycache__'}
-SKIP_FILES = {'README.md', 'CLAUDE.md', 'sw.js', 'sw-files.js', '.gitignore', '.nojekyll'}
+SKIP_DIRS = {'.git', '.github', '.claude', 'android', 'tools', '__pycache__'}
+SKIP_FILES = {'README.md', 'CLAUDE.md', 'sw.js', 'sw-files.js', '.gitignore', '.nojekyll',
+              'signing-secrets-DO-NOT-SHARE.txt'}
 
 files = {}
 for folder, dirs, names in os.walk(ROOT):

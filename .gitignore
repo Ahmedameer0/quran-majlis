@@ -4,3 +4,10 @@ __pycache__/
 *.pyc
 data/tafsir/mizan/
 data/local-sources.js
+android/.gradle/
+android/build/
+android/app/build/
+android/app/src/main/assets/
+android/app.keystore
+*.keystore
+signing-secrets-DO-NOT-SHARE.txt
