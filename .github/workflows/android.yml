@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -36,26 +36,20 @@ jobs:
           # لا مصدر محلي ولا Service Worker داخل التطبيق
           sed -i '/local-sources\.js/d;/manifest\.json/d' "$site/index.html"
 
-      # بالمفتاح الثابت تُثبَّت كل نسخة فوق السابقة دون فقد التقدم.
-      # دونه يُولَّد مفتاح مؤقت، ولا يمكن وقتها التحديث إلا بحذف التطبيق أولاً.
+      # بالمفتاح الثابت تُثبَّت كل نسخة فوق السابقة دون فقد التقدم
       - name: Prepare signing key
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         run: |
-          store="$RUNNER_TEMP/app.keystore"
-          if [ -n "$KEYSTORE_BASE64" ]; then
-            echo "$KEYSTORE_BASE64" | base64 -d > "$store"
-            pass="$KEYSTORE_PASSWORD"
-          else
-            pass="$(openssl rand -hex 16)"
-            keytool -genkeypair -storetype pkcs12 -keystore "$store" -storepass "$pass" \
-              -alias majlis -keyalg RSA -keysize 2048 -validity 10950 -dname "CN=Quran Majlis"
-            echo "::warning::Built with a temporary signing key"
+          if [ -z "$KEYSTORE_BASE64" ] || [ -z "$KEYSTORE_PASSWORD" ]; then
+            echo "::error::Signing secrets are missing"
+            exit 1
           fi
-          echo "::add-mask::$pass"
+          store="$RUNNER_TEMP/app.keystore"
+          echo "$KEYSTORE_BASE64" | base64 -d > "$store"
           echo "SIGNING_KEYSTORE=$store" >> "$GITHUB_ENV"
-          echo "SIGNING_PASSWORD=$pass" >> "$GITHUB_ENV"
+          echo "SIGNING_PASSWORD=$KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
 
       - name: Build
         working-directory: android
