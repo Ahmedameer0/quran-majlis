@@ -46,11 +46,7 @@ https://github.com/Ahmedameer0/quran-majlis/releases/latest/download/quran-majli
 
 ## الاستماع
 
-| القارئ | المصدر | الدقة |
-|---|---|---|
-| كريم منصوري، شهريار پرهيزگار، عبد الباسط عبد الصمد، محمد صديق المنشاوي | everyayah.com | ملف لكل آية |
-| حامد شاكر نجاد | archive.org، ملف لكل سورة | بداية تقريبية بنسبة عدد الحروف |
-| أسامة الكربلائي | archive.org، ملف لكل جزء | بداية تقريبية بنسبة عدد الحروف |
+القراء: كريم منصوري، وشهريار پرهيزگار، وعبد الباسط عبد الصمد، ومحمد صديق المنشاوي. المصدر everyayah.com، وبملف مستقل لكل آية.
 
 الصوت يُبث عند الطلب ولا يُخزَّن، وبقية الموقع لا تتأثر بانقطاع الإنترنت.
 
@@ -64,7 +60,8 @@ https://github.com/Ahmedameer0/quran-majlis/releases/latest/download/quran-majli
 | تفسير جوامع الجامع ومجمع البيان (الطبرسي، ت 548هـ) | OpenITI، عن مكتبة الشيعة الرقمية | نص تراثي؛ راجع شروط OpenITI للنسخة الرقمية |
 | تفسيرا الميزان (الطباطبائي) والأمثل (مكارم الشيرازي) | OpenITI | عمل حديث قد تكون حقوقه قائمة، لذلك هو في النسخة المحلية فقط ولا يُرفع إلى GitHub (`data/tafsir/mizan/` و`data/tafsir/amthal/` و`data/local-sources.js`) |
 | مفردات ألفاظ القرآن (الراغب، ت 502هـ) | OpenITI | نص تراثي؛ راجع شروط OpenITI للنسخة الرقمية |
-| خطوط Amiri وAref Ruqaa وTajawal | Fontsource | SIL OFL |
+| خط أسماء السور `sura_names` | quran.com | راجع شروط quran.com |
+| خطوط Amiri وAref Ruqaa وTajawal وScheherazade New وNoto Naskh Arabic وLateef | Fontsource | SIL OFL |
 
 تحقق البناء من مطابقة حروف الآيات الـ6236 لنسخة Tanzil المستقلة (دون التشكيل).
 

@@ -1,4 +1,8 @@
 @font-face { font-family: UthmanicHafs; src: url(../fonts/UthmanicHafs.woff2) format("woff2"); font-display: block; }
+@font-face { font-family: "Scheherazade New"; src: url(../fonts/scheherazade-new-arabic-400-normal.woff2) format("woff2"); font-display: block; }
+@font-face { font-family: "Noto Naskh Arabic"; src: url(../fonts/noto-naskh-arabic-arabic-400-normal.woff2) format("woff2"); font-display: block; }
+@font-face { font-family: Lateef; src: url(../fonts/lateef-arabic-400-normal.woff2) format("woff2"); font-display: block; }
+@font-face { font-family: SuraNames; src: url(../fonts/sura_names.woff2) format("woff2"); font-display: block; }
 @font-face { font-family: "Amiri Quran"; src: url(../fonts/amiri-quran.woff2) format("woff2"); font-display: swap; }
 @font-face { font-family: Amiri; src: url(../fonts/amiri-arabic-400-normal.woff2) format("woff2"); font-weight: 400; unicode-range: U+0600-06FF, U+0750-077F, U+200C-200F, U+FB50-FDFF, U+FE70-FEFF; }
 @font-face { font-family: Amiri; src: url(../fonts/amiri-arabic-700-normal.woff2) format("woff2"); font-weight: 700; unicode-range: U+0600-06FF, U+0750-077F, U+200C-200F, U+FB50-FDFF, U+FE70-FEFF; }
@@ -107,6 +111,11 @@
   --quote: #6f4c0e;
 }
 
+:root { --quran-font: UthmanicHafs, "Amiri Quran", Amiri, serif; }
+:root[data-qfont="scheherazade"] { --quran-font: "Scheherazade New", UthmanicHafs, serif; }
+:root[data-qfont="naskh"] { --quran-font: "Noto Naskh Arabic", UthmanicHafs, serif; }
+:root[data-qfont="lateef"] { --quran-font: Lateef, UthmanicHafs, serif; }
+
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
 body {
@@ -130,7 +139,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
   border-bottom: 1px solid var(--line);
 }
 .bar-info { display: flex; align-items: baseline; gap: 1.2vw; min-width: 0; white-space: nowrap; overflow: hidden; }
-.bar-surah { font-family: "Aref Ruqaa", Amiri, serif; font-weight: 700; font-size: clamp(20px, 3.3vh, 38px); color: var(--gold); }
+.bar-surah, .sura-name {
+  font-family: SuraNames, Amiri, serif; font-weight: normal; color: var(--gold); line-height: 1;
+  direction: rtl; unicode-bidi: bidi-override; white-space: nowrap;
+}
+.bar-surah { font-size: clamp(26px, 4.4vh, 50px); }
 .bar-meta { font-size: clamp(14px, 2.2vh, 24px); color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; }
 .bar-actions { display: flex; gap: .5vw; flex: none; }
 .bar-actions button {
@@ -141,7 +154,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .bar-actions button:hover, .bar-actions button:focus-visible { color: var(--gold); border-color: var(--line); outline: none; }
 
 /* ───── الصفحة ───── */
-#stage { position: relative; flex: 1; min-height: 0; padding: clamp(14px, 2.6vh, 34px) clamp(36px, 3.4vw, 72px); }
+#stage { position: relative; flex: 1; min-height: 0; padding: clamp(34px, 5vh, 58px) clamp(36px, 3.4vw, 72px); }
 .nav-btn {
   position: absolute; bottom: clamp(10px, 1.8vh, 22px); z-index: 3; width: clamp(28px, 2.6vw, 52px); height: clamp(28px, 2.6vw, 52px);
   display: flex; align-items: center; justify-content: center; padding: 0;
@@ -167,7 +180,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 #viewport { position: relative; width: 100%; height: 100%; overflow: hidden; display: flex; justify-content: center; align-items: flex-start; }
 #sheet { position: relative; flex: none; transition: transform .55s cubic-bezier(.3, .7, .2, 1); will-change: transform; }
-#rows { position: relative; font-family: UthmanicHafs, "Amiri Quran", Amiri, serif; color: var(--ink); user-select: none; -webkit-user-select: none; }
+#rows { position: relative; font-family: var(--quran-font); color: var(--ink); user-select: none; -webkit-user-select: none; }
 #rows.turn { animation: turn .34s ease-out; }
 @keyframes turn { from { opacity: 0; } to { opacity: 1; } }
 
@@ -204,9 +217,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 :root[data-end="plain"] .ayah-end { width: auto; min-width: 1.2em; font-size: .68em; }
 :root[data-end="plain"] .ayah-end::before, :root[data-end="plain"] .ayah-end::after { display: none; }
 
-/* سمك الخط: الخط المصحفي بوزن واحد، فالعريض تثخين آلي من المتصفح */
-:root[data-weight="bold"] #rows { font-weight: bold; }
-:root[data-weight="bold"] .ayah-text { font-weight: bold; }
+/* سمك الخط: الخط المصحفي بوزن واحد، فالعريض حدّ بلون النص يبقى ناعماً عند التكبير خلافاً للتثخين الآلي */
+:root[data-weight="bold"] #rows .word, :root[data-weight="bold"] .basmala, :root[data-weight="bold"] .ayah-text {
+  -webkit-text-stroke: .02em currentColor; text-rendering: geometricPrecision;
+}
 
 .sura-row { justify-content: center; }
 .sura-band {
@@ -220,7 +234,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .sura-band::before { right: 1.4em; }
 .sura-band::after { left: 1.4em; }
-.sura-name { font-family: "Aref Ruqaa", Amiri, serif; font-weight: 700; color: var(--gold); font-size: .78em; line-height: 1; }
+.sura-name { font-size: 1.15em; }
 .basmala { font-size: .92em; }
 
 #hl { position: absolute; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none; }
@@ -296,7 +310,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .panel button.ayah-item { display: flex; align-items: center; gap: .7em; text-align: right; flex: none; padding: .35em .7em; }
 .ayah-item .ayah-end { font-size: 1em; margin: 0 .5em; }
 .ayah-text {
-  font-family: UthmanicHafs, "Amiri Quran", Amiri, serif; font-size: 1.3em; line-height: 1.9;
+  font-family: var(--quran-font); font-size: 1.3em; line-height: 1.9;
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
 }
 .ayah-text mark { background: var(--gold-soft); color: var(--gold); border-radius: 4px; }
@@ -311,7 +325,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .tafsir-source { margin: .7em 0 0; padding-top: .55em; border-top: 1px solid var(--line); color: var(--gold); font-weight: 700; font-size: .95em; }
 
 .wordcard { max-height: 88vh; }
-.wc-word { font-family: UthmanicHafs, "Amiri Quran", serif; font-size: 3.2em; line-height: 1.7; color: var(--gold); text-align: center; }
+.wc-word { font-family: var(--quran-font); font-size: 3.2em; line-height: 1.7; color: var(--gold); text-align: center; }
 .wc-where { margin: 0 0 .7em; text-align: center; color: var(--ink-soft); }
 .wc-body { flex: 1; overflow: auto; min-height: 0; }
 .wc-facts { display: grid; grid-template-columns: 1fr 1fr; gap: .5em; }

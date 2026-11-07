@@ -1,7 +1,15 @@
 // ربط الأجزاء: المفاتيح، الموضع المحفوظ، الجلسة، الختمة.
 var App = (function () {
   var D = QD;
-  var SIZES = [15, 12, 9, 7, 5];
+  var SIZES = [
+    { id: '15', per: 15, label: '١٥ سطراً' },
+    { id: '12', per: 12, label: '١٢ سطراً' },
+    { id: '9', per: 9, label: '٩ أسطر' },
+    { id: '7', per: 7, label: '٧ أسطر' },
+    { id: '7big', per: 7, ratio: 0.66, label: '٧ أسطر كبير' },
+    { id: '5', per: 5, label: '٥ أسطر' }
+  ];
+  var sizeId = '9';
   var SESSION_HOURS = 12;
   var WHEEL_GAP = 320;
   var wordMode = null;   // { list, at } أثناء التنقل بين كلمات الآية
@@ -17,6 +25,12 @@ var App = (function () {
     { id: 'brown', label: 'بني دافئ' },
     { id: 'light', label: 'كريمي كلاسيكي' },
     { id: 'sepia', label: 'ورق قديم' }
+  ];
+  var QURAN_FONTS = [
+    { id: 'hafs', label: 'المصحف (حفص)', family: 'UthmanicHafs' },
+    { id: 'scheherazade', label: 'شهرزاد', family: 'Scheherazade New' },
+    { id: 'naskh', label: 'نسخ', family: 'Noto Naskh Arabic' },
+    { id: 'lateef', label: 'لطيف', family: 'Lateef' }
   ];
   var WEIGHTS = [
     { id: 'normal', label: 'عادي' },
@@ -73,7 +87,7 @@ var App = (function () {
 
   function onMove(g, page) {
     var a = D.ayahOf(g);
-    document.getElementById('barSurah').textContent = 'سورة ' + a.surah.name;
+    D.fillSurahName(document.getElementById('barSurah'), a.surah);
     document.getElementById('barMeta').textContent =
       'الآية ' + D.digits(a.ayah) + ' · الجزء ' + D.digits(D.juzOf(g)) + ' · صفحة ' + D.digits(page);
     document.querySelector('#progress i').style.width = (g + 1) / D.ayahCount * 100 + '%';
@@ -216,6 +230,20 @@ var App = (function () {
     toast(ayahMark ? 'تم تفعيل تحديد الآية' : 'تم إخفاء تحديد الآية');
   }
 
+  function loadQuranFont(id) {
+    var font = QURAN_FONTS.filter(function (f) { return f.id === id; })[0];
+    return document.fonts && document.fonts.load
+      ? document.fonts.load('40px "' + font.family + '"', 'بِسۡمِ').catch(function () {})
+      : Promise.resolve();
+  }
+
+  function setQuranFont(id) {
+    document.documentElement.setAttribute('data-qfont', id);
+    Store.write('quranFont', id);
+    // قياس الأسطر يحتاج الخط محمَّلاً
+    loadQuranFont(id).then(Mushaf.relayout);
+  }
+
   function setWeight(id) {
     document.documentElement.setAttribute('data-weight', id);
     Store.write('weight', id);
@@ -233,13 +261,20 @@ var App = (function () {
     Panels.fontSettings([
       {
         title: 'حجم الخط',
-        items: SIZES.map(function (n) {
+        items: SIZES.map(function (s) {
           return {
-            label: D.digits(n) + (n > 10 ? ' سطراً' : ' أسطر'), on: n === Mushaf.perScreen(), fn: function () {
-              Store.write('perScreen', n);
-              Mushaf.setPerScreen(n);
+            label: s.label, on: s.id === sizeId, fn: function () {
+              sizeId = s.id;
+              Store.write('sizeId', s.id);
+              Mushaf.setPerScreen(s.per, s.ratio);
             }
           };
+        })
+      },
+      {
+        title: 'نوع خط القرآن',
+        items: QURAN_FONTS.map(function (f) {
+          return { label: f.label, on: f.id === root.getAttribute('data-qfont'), fn: function () { setQuranFont(f.id); } };
         })
       },
       {
@@ -258,10 +293,9 @@ var App = (function () {
   }
 
   function openListen(g) {
-    var a = D.ayahOf(g);
     Panels.menu('الاستماع إلى ' + Panels.ayahTitle(g), Recite.reciters.map(function (r) {
       return {
-        label: r.name + ' (' + r.note + ')' + (r.mode === 'ayah' ? '' : ' · بداية تقريبية'),
+        label: r.name + ' (' + r.note + ')',
         primary: r.id === Store.read('reciter', ''),
         fn: function () {
           Store.write('reciter', r.id);
@@ -484,6 +518,8 @@ var App = (function () {
       var v = Store.read(key, fallback);
       return list.some(function (x) { return x.id === v; }) ? v : fallback;
     }
+    var quranFont = savedChoice('quranFont', QURAN_FONTS, 'hafs');
+    document.documentElement.setAttribute('data-qfont', quranFont);
     document.documentElement.setAttribute('data-weight', savedChoice('weight', WEIGHTS, 'normal'));
     document.documentElement.setAttribute('data-end', savedChoice('ayahEnd', AYAH_ENDS, 'circle'));
     Recite.init();
@@ -506,8 +542,13 @@ var App = (function () {
     setAyahMark(Store.read('ayahMark', true));
     var savedStyle = Store.read('markStyle', 'frame');
     setMarkStyle(MARK_STYLES.some(function (s) { return s.id === savedStyle; }) ? savedStyle : 'frame');
-    var per = Store.read('perScreen', 9);
-    if (SIZES.indexOf(per) >= 0) Mushaf.setPerScreen(per);
+    // المفتاح القديم perScreen كان رقماً
+    var savedSize = String(Store.read('sizeId', Store.read('perScreen', 9)));
+    var size = SIZES.filter(function (s) { return s.id === savedSize; })[0];
+    if (size) {
+      sizeId = size.id;
+      Mushaf.setPerScreen(size.per, size.ratio);
+    }
 
     document.querySelector('.bar-actions').addEventListener('click', function (e) {
       var b = e.target.closest ? e.target.closest('[data-act]') : null;
@@ -544,7 +585,7 @@ var App = (function () {
     // الوقوف على أول آية بلا قراءة ليس موضعاً يستحق السؤال عنه
     var saved = pos && pos.g > 0 && pos.g < D.ayahCount ? pos : null;
     var ready = document.fonts && document.fonts.load
-      ? Promise.all([document.fonts.load('40px UthmanicHafs', 'بِسۡمِ'), document.fonts.ready])
+      ? Promise.all([loadQuranFont(quranFont), document.fonts.load('40px SuraNames', ''), document.fonts.ready])
       : Promise.resolve();
     function begin() {
       document.getElementById('loading').hidden = true;

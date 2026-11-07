@@ -72,6 +72,13 @@ var QD = (function () {
     return [D.juzStart[j - 1], j < 30 ? D.juzStart[j] - 1 : D.ayahCount - 1];
   };
 
+  // خط أسماء السور: U+E000 كلمة «سورة»، وكل اسم في U+E0nn برقم السورة العشري مقروءاً كأنه ست عشري
+  D.fillSurahName = function (node, surah) {
+    node.textContent = ' ' + String.fromCharCode(0xE000 + parseInt(String(surah.id), 16));
+    node.setAttribute('role', 'img');
+    node.setAttribute('aria-label', 'سورة ' + surah.name);
+  };
+
   D.digits = function (n) {
     return String(n).replace(/\d/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'[d]; });
   };

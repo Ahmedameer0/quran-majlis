@@ -2,7 +2,8 @@
 var Mushaf = (function () {
   var D = QD;
   var LONG_PRESS = 550;
-  var state = { page: 0, g: 0, top: 0, perScreen: 9, rowH: 0, font: 0 };
+  var FONT_RATIO = 0.58;  // نسبة الخط إلى ارتفاع السطر
+  var state = { page: 0, g: 0, top: 0, perScreen: 9, ratio: FONT_RATIO, rowH: 0, font: 0 };
   var rowsEl, sheetEl, hlEl, dotEl, viewEl;
   var pageRows = [];
   var hooks = {};
@@ -26,7 +27,9 @@ var Mushaf = (function () {
     if (row[0] === 'S') {
       div.className = 'row sura-row';
       var band = el('div', 'sura-band');
-      band.appendChild(el('span', 'sura-name', 'سورة ' + D.surahs[row[1] - 1].name));
+      var name = el('span', 'sura-name');
+      D.fillSurahName(name, D.surahs[row[1] - 1]);
+      band.appendChild(name);
       div.appendChild(band);
       return div;
     }
@@ -67,7 +70,7 @@ var Mushaf = (function () {
       if (wd > widest) widest = wd;
     }
     rowsEl.classList.remove('measuring');
-    var byHeight = rowH * 0.58;
+    var byHeight = rowH * state.ratio;
     var byWidth = widest ? 100 * (w * 0.985) / widest : byHeight;
     var font = Math.floor(Math.min(byHeight, byWidth));
     state.rowH = rowH;
@@ -227,8 +230,9 @@ var Mushaf = (function () {
     refresh();
   }
 
-  function setPerScreen(n) {
+  function setPerScreen(n, ratio) {
     state.perScreen = n;
+    state.ratio = ratio || FONT_RATIO;
     if (!state.page) return;
     fit();
     state.top = clampTop(state.top);
