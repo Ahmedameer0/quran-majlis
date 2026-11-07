@@ -11,6 +11,7 @@ var App = (function () {
   ];
   var sizeId = '9';
   var SESSION_HOURS = 12;
+  var CLOSE_WAIT = 300;
   var WHEEL_GAP = 320;
   var wordMode = null;   // { list, at } أثناء التنقل بين كلمات الآية
   var session;
@@ -351,6 +352,22 @@ var App = (function () {
     });
   }
 
+  // التطبيق يُغلق نفسه، والمتصفح لا يسمح لصفحة بإغلاق تبويب لم تفتحه هي
+  function exitApp() {
+    var g = Mushaf.current().g;
+    newSession(g);
+    if (window.AndroidApp) {
+      window.AndroidApp.exit();
+      return;
+    }
+    window.close();
+    setTimeout(function () {
+      Panels.menu('انتهت الجلسة، تقبّل الله منكم', [
+        { label: 'العودة إلى القراءة', primary: true, fn: function () {} }
+      ], { text: 'حُفظ موضع القراءة والختمة، ويمكنك إغلاق هذه الصفحة الآن.' });
+    }, CLOSE_WAIT);
+  }
+
   function openFinish() {
     var cur = Mushaf.current();
     var read = session.read;
@@ -373,6 +390,7 @@ var App = (function () {
       percent: Khatma.total() / Khatma.TOTAL * 100,
       juzDone: juzDone
     }, {
+      exit: exitApp,
       restart: function () {
         newSession(Mushaf.current().g);
         toast('بدأت جلسة جديدة');

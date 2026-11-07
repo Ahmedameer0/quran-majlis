@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -35,6 +36,7 @@ public class MainActivity extends Activity {
         settings.setTextZoom(100);
         settings.setMediaPlaybackRequiresUserGesture(false);
         web.setWebViewClient(new WebViewClient());
+        web.addJavascriptInterface(new AppBridge(), "AndroidApp");
         setContentView(web);
 
         web.loadUrl("file:///android_asset/site/index.html");
@@ -52,6 +54,14 @@ public class MainActivity extends Activity {
                             | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                             | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+        }
+    }
+
+    /** زر «خروج» في خاتمة الليلة. الصفحة ملفات محلية من داخل التطبيق فقط. */
+    private class AppBridge {
+        @JavascriptInterface
+        public void exit() {
+            runOnUiThread(MainActivity.this::finish);
         }
     }
 

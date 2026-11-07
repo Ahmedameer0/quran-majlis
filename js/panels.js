@@ -592,6 +592,7 @@ var Panels = (function () {
     var foot = el('div', 'wc-actions');
     foot.appendChild(btn('جلسة جديدة', function () { close(); actions.restart(); }, 'primary'));
     foot.appendChild(btn('متابعة القراءة', close));
+    foot.appendChild(btn('خروج', function () { close(); actions.exit(); }));
     box.appendChild(foot);
     push(box, { cls: 'panel-mid' });
   }
