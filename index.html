@@ -9,7 +9,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<link rel="stylesheet" href="css/app.css?v=26">
+<link rel="stylesheet" href="css/app.css?v=27">
 </head>
 <body>
 <div id="app">
@@ -21,6 +21,7 @@
     <nav class="bar-actions" aria-label="الأدوات">
       <button data-act="tafsir">تفسير</button>
       <button data-act="listen">استمع</button>
+      <button data-act="voice" aria-pressed="false" hidden>تتبع صوتي</button>
       <button data-act="search">بحث في السورة</button>
       <button data-act="index">الفهرس</button>
       <button data-act="map">خريطة الختمة</button>
@@ -50,20 +51,25 @@
 <div id="overlay" hidden></div>
 <div id="toast" hidden></div>
 <div id="offline" hidden></div>
+<div id="voice" hidden>
+  <span id="voiceLabel"></span>
+  <button id="voiceStop" type="button" aria-label="إيقاف التتبع الصوتي">إيقاف</button>
+</div>
 <div id="player" hidden>
   <span id="playerLabel"></span>
   <button id="playerStop" type="button" aria-label="إيقاف التلاوة">إيقاف</button>
 </div>
 <div id="loading">جارٍ تحميل المصحف…</div>
 
-<script src="js/store.js?v=26"></script>
-<script src="js/data.js?v=26"></script>
+<script src="js/store.js?v=27"></script>
+<script src="js/data.js?v=27"></script>
 <script src="data/local-sources.js"></script>
 <script src="data/quran.js"></script>
-<script src="js/mushaf.js?v=26"></script>
-<script src="js/panels.js?v=26"></script>
-<script src="js/audio.js?v=26"></script>
-<script src="js/app.js?v=26"></script>
-<script src="js/pwa.js?v=26"></script>
+<script src="js/mushaf.js?v=27"></script>
+<script src="js/panels.js?v=27"></script>
+<script src="js/audio.js?v=27"></script>
+<script src="js/tracking.js?v=27"></script>
+<script src="js/app.js?v=27"></script>
+<script src="js/pwa.js?v=27"></script>
 </body>
 </html>

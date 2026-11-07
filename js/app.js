@@ -87,6 +87,8 @@ var App = (function () {
   }
 
   function onMove(g, page) {
+    // تنقل يدوي أثناء التتبع: يبدأ البحث من الموضع الجديد
+    if (!trackingMove) Tracking.syncTo(g);
     var a = D.ayahOf(g);
     D.fillSurahName(document.getElementById('barSurah'), a.surah);
     document.getElementById('barMeta').textContent =
@@ -293,6 +295,36 @@ var App = (function () {
     ]);
   }
 
+  /* ───────── التتبع الصوتي (تجريبي) ───────── */
+
+  var trackingMove = false;
+  var TRACK_MARK_MAX = 3;   // الانتقال لآيات قليلة تالية يُحسب قراءة لما بينها
+
+  function trackMove(g) {
+    var cur = Mushaf.current().g;
+    if (g > cur && g - cur <= TRACK_MARK_MAX) {
+      for (var x = cur; x < g; x++) onAdvance(x);
+    }
+    trackingMove = true;
+    Mushaf.show(g);
+    trackingMove = false;
+  }
+
+  function toggleVoice() {
+    if (!Tracking.supported) {
+      toast('التتبع الصوتي يعمل في متصفح Chrome فقط');
+      return;
+    }
+    if (Tracking.isListening()) {
+      Tracking.stop();
+      return;
+    }
+    document.getElementById('voice').hidden = false;
+    document.getElementById('voiceLabel').textContent = 'يستمع… ابدأ القراءة';
+    document.querySelector('[data-act="voice"]').setAttribute('aria-pressed', 'true');
+    Tracking.start();
+  }
+
   function openListen(g) {
     Panels.menu('الاستماع إلى ' + Panels.ayahTitle(g), Recite.reciters.map(function (r) {
       return {
@@ -403,6 +435,7 @@ var App = (function () {
     Panels.menu(Panels.ayahTitle(g), [
       { label: 'تفسير الآية', primary: true, fn: function () { Panels.tafsir(g); } },
       { label: 'استمع إلى الآية', fn: function () { openListen(g); } },
+      { label: Tracking.isListening() ? 'إيقاف التتبع الصوتي' : 'التتبع الصوتي للقراءة (تجريبي)', fn: toggleVoice },
       { label: 'اختيار كلمة من الآية', fn: enterWordMode },
       { label: 'تمييز جذور الآية في السورة', fn: function () { markAyahRoots(g); } },
       { label: 'البحث عن آية في السورة', fn: function () { openSearch(); } },
@@ -422,6 +455,7 @@ var App = (function () {
     map: openMap,
     size: openFont,
     listen: function () { openListen(Mushaf.current().g); },
+    voice: toggleVoice,
     mark: openMarkStyle,
     theme: openTheme,
     finish: openFinish
@@ -519,6 +553,9 @@ var App = (function () {
       case 'l':
         openListen(Mushaf.current().g);
         break;
+      case 'v':
+        toggleVoice();
+        break;
       default:
         return;
     }
@@ -541,6 +578,24 @@ var App = (function () {
     document.documentElement.setAttribute('data-weight', savedChoice('weight', WEIGHTS, 'normal'));
     document.documentElement.setAttribute('data-end', savedChoice('ayahEnd', AYAH_ENDS, 'circle'));
     Recite.init();
+    Tracking.init({
+      current: function () { return Mushaf.current().g; },
+      move: trackMove,
+      status: function (text, interim) {
+        document.getElementById('voiceLabel').textContent = text ? '🎙 ' + text : 'يستمع… ابدأ القراءة';
+        document.getElementById('voice').classList.toggle('interim', interim);
+      },
+      stopped: function () {
+        document.getElementById('voice').hidden = true;
+        document.querySelector('[data-act="voice"]').setAttribute('aria-pressed', 'false');
+      },
+      error: toast
+    });
+    document.querySelector('[data-act="voice"]').hidden = !Tracking.supported;
+    document.getElementById('voiceStop').addEventListener('click', function (e) {
+      e.currentTarget.blur();
+      Tracking.stop();
+    });
     Khatma.load();
     Panels.init();
     Panels.onBack = onRootBack;

@@ -369,6 +369,16 @@ button { font: inherit; color: inherit; cursor: pointer; }
   border: 1px solid var(--gold); border-radius: 999px; padding: .35em .5em .35em 1.2em;
   font-size: clamp(14px, 2.2vh, 24px); box-shadow: 0 8px 30px var(--shadow); white-space: nowrap;
 }
+#voice {
+  position: fixed; bottom: clamp(92px, 14vh, 150px); left: 50%; transform: translateX(-50%); z-index: 9; max-width: 92vw;
+  display: flex; align-items: center; gap: .9em; background: var(--panel); color: var(--ink);
+  border: 1px dashed var(--gold); border-radius: 999px; padding: .3em .5em .3em 1.2em;
+  font-size: clamp(13px, 2vh, 22px); white-space: nowrap; opacity: .9;
+}
+#voice.interim #voiceLabel { color: var(--ink-soft); }
+#voiceLabel { overflow: hidden; text-overflow: ellipsis; max-width: 70vw; }
+#voiceStop { flex: none; background: var(--gold); color: var(--panel); border: none; border-radius: 999px; padding: .2em 1em; font-weight: 700; }
+.bar-actions button[data-act="voice"][aria-pressed="true"] { color: var(--gold); }
 #playerLabel { overflow: hidden; text-overflow: ellipsis; }
 #playerStop { flex: none; background: var(--gold); color: var(--panel); border: none; border-radius: 999px; padding: .25em 1em; font-weight: 700; }
 #offline {
