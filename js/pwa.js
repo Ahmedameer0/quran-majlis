@@ -1,9 +1,7 @@
-// تثبيت الموقع كتطبيق وحفظ ملفاته للعمل دون إنترنت.
+// حفظ ملفات الموقع للعمل دون إنترنت.
 (function () {
   var badge = document.getElementById('offline');
-  var installBtn = document.querySelector('[data-act="install"]');
   var hideTimer = 0;
-  var deferred = null;
 
   function show(text, sticky) {
     badge.textContent = text;
@@ -11,25 +9,6 @@
     clearTimeout(hideTimer);
     if (!sticky) hideTimer = setTimeout(function () { badge.hidden = true; }, 6000);
   }
-
-  window.addEventListener('beforeinstallprompt', function (e) {
-    e.preventDefault();
-    deferred = e;
-    installBtn.hidden = false;
-  });
-
-  installBtn.addEventListener('click', function () {
-    if (!deferred) return;
-    deferred.prompt();
-    deferred.userChoice.then(function () {
-      deferred = null;
-      installBtn.hidden = true;
-    });
-  });
-
-  window.addEventListener('appinstalled', function () {
-    installBtn.hidden = true;
-  });
 
   // لا يعمل Service Worker من file:// ولا يلزم هناك
   if (!('serviceWorker' in navigator) || !window.isSecureContext || location.protocol === 'file:') return;

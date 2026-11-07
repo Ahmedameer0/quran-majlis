@@ -184,30 +184,29 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .word.rootmark { color: var(--root); text-shadow: 0 0 .4em color-mix(in srgb, var(--root) 35%, transparent); }
 .word.cursor { outline: 2px solid var(--gold); outline-offset: 4px; background: var(--gold-soft); }
 
+/* علامة نهاية الآية: الزخرفة قناع يتلون بلون الوضع المختار */
 .ayah-end {
-  flex: none; display: inline-flex; align-items: center; justify-content: center;
-  width: 1.32em; height: 1.32em; margin: 0 .04em; border-radius: 50%; cursor: pointer;
-  font-family: Tajawal, sans-serif; font-weight: 700; font-size: .52em; line-height: 1;
-  color: var(--gold); border: .09em double var(--gold); box-sizing: content-box;
-  background: var(--gold-soft);
+  position: relative; flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 1.5em; height: 1.5em; margin: 0 .2em; cursor: pointer; isolation: isolate;
+  font-family: Amiri, UthmanicHafs, serif; font-weight: 700; font-size: .5em; line-height: 1; color: var(--gold);
 }
-/* أشكال علامة نهاية الآية */
-:root[data-end="rose"] .ayah-end, :root[data-end="diamond"] .ayah-end, :root[data-end="hex"] .ayah-end {
-  position: relative; border-color: transparent; background: none;
+.ayah-end::before, .ayah-end::after {
+  content: ""; position: absolute; top: -22%; right: -22%; bottom: -22%; left: -22%; pointer-events: none;
+  background: var(--gold); -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
 }
-:root[data-end="rose"] .ayah-end::before, :root[data-end="diamond"] .ayah-end::before, :root[data-end="hex"] .ayah-end::before {
-  content: ""; position: absolute; top: -14%; right: -14%; bottom: -14%; left: -14%; background: var(--gold); pointer-events: none;
-  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-}
-:root[data-end="rose"] .ayah-end::before { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 4l11 16 18-7 2 19 19 6-9 17 12 15-18 8 1 19-19-1-7 18-15-12-16 10-5-19-19-3 5-19-15-12 14-13-6-18 19-3 3-19 18 6z' fill='none' stroke='%23000' stroke-width='7'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 4l11 16 18-7 2 19 19 6-9 17 12 15-18 8 1 19-19-1-7 18-15-12-16 10-5-19-19-3 5-19-15-12 14-13-6-18 19-3 3-19 18 6z' fill='none' stroke='%23000' stroke-width='7'/%3E%3C/svg%3E"); }
-:root[data-end="diamond"] .ayah-end::before { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 3L97 50 50 97 3 50z' fill='none' stroke='%23000' stroke-width='7'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 3L97 50 50 97 3 50z' fill='none' stroke='%23000' stroke-width='7'/%3E%3C/svg%3E"); }
-:root[data-end="hex"] .ayah-end::before { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 3L91 26.500 91 73.500 50 97 9 73.500 9 26.500z' fill='none' stroke='%23000' stroke-width='7'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 3L91 26.500 91 73.500 50 97 9 73.500 9 26.500z' fill='none' stroke='%23000' stroke-width='7'/%3E%3C/svg%3E"); }
-:root[data-end="plain"] .ayah-end { border-color: transparent; background: none; font-size: .68em; width: auto; height: auto; min-width: 1em; }
+.ayah-end::before { -webkit-mask-image: var(--end-art); mask-image: var(--end-art); }
+.ayah-end::after { -webkit-mask-image: var(--end-fill); mask-image: var(--end-fill); opacity: .13; z-index: -1; }
+:root[data-end="circle"] { --end-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='none' stroke='%23000' stroke-width='2.6'/%3E%3Ccircle cx='50' cy='50' r='36' fill='none' stroke='%23000' stroke-width='1.8'/%3E%3Ccircle cx='50.0' cy='9.0' r='1.7'/%3E%3Ccircle cx='64.02' cy='11.47' r='1.7'/%3E%3Ccircle cx='76.35' cy='18.59' r='1.7'/%3E%3Ccircle cx='85.51' cy='29.5' r='1.7'/%3E%3Ccircle cx='90.38' cy='42.88' r='1.7'/%3E%3Ccircle cx='90.38' cy='57.12' r='1.7'/%3E%3Ccircle cx='85.51' cy='70.5' r='1.7'/%3E%3Ccircle cx='76.35' cy='81.41' r='1.7'/%3E%3Ccircle cx='64.02' cy='88.53' r='1.7'/%3E%3Ccircle cx='50.0' cy='91.0' r='1.7'/%3E%3Ccircle cx='35.98' cy='88.53' r='1.7'/%3E%3Ccircle cx='23.65' cy='81.41' r='1.7'/%3E%3Ccircle cx='14.49' cy='70.5' r='1.7'/%3E%3Ccircle cx='9.62' cy='57.12' r='1.7'/%3E%3Ccircle cx='9.62' cy='42.88' r='1.7'/%3E%3Ccircle cx='14.49' cy='29.5' r='1.7'/%3E%3Ccircle cx='23.65' cy='18.59' r='1.7'/%3E%3Ccircle cx='35.98' cy='11.47' r='1.7'/%3E%3C/svg%3E"); --end-fill: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46'/%3E%3C/svg%3E"); }
+:root[data-end="rose"] { --end-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50.0 7.0A11.5 11.5 0 0 1 71.5 12.76A11.5 11.5 0 0 1 87.24 28.5A11.5 11.5 0 0 1 93.0 50.0A11.5 11.5 0 0 1 87.24 71.5A11.5 11.5 0 0 1 71.5 87.24A11.5 11.5 0 0 1 50.0 93.0A11.5 11.5 0 0 1 28.5 87.24A11.5 11.5 0 0 1 12.76 71.5A11.5 11.5 0 0 1 7.0 50.0A11.5 11.5 0 0 1 12.76 28.5A11.5 11.5 0 0 1 28.5 12.76A11.5 11.5 0 0 1 50.0 7.0z' fill='none' stroke='%23000' stroke-width='2.6' stroke-linejoin='round'/%3E%3Ccircle cx='50' cy='50' r='33' fill='none' stroke='%23000' stroke-width='2'/%3E%3Ccircle cx='59.96' cy='12.81' r='1.5'/%3E%3Ccircle cx='77.22' cy='22.78' r='1.5'/%3E%3Ccircle cx='87.19' cy='40.04' r='1.5'/%3E%3Ccircle cx='87.19' cy='59.96' r='1.5'/%3E%3Ccircle cx='77.22' cy='77.22' r='1.5'/%3E%3Ccircle cx='59.96' cy='87.19' r='1.5'/%3E%3Ccircle cx='40.04' cy='87.19' r='1.5'/%3E%3Ccircle cx='22.78' cy='77.22' r='1.5'/%3E%3Ccircle cx='12.81' cy='59.96' r='1.5'/%3E%3Ccircle cx='12.81' cy='40.04' r='1.5'/%3E%3Ccircle cx='22.78' cy='22.78' r='1.5'/%3E%3Ccircle cx='40.04' cy='12.81' r='1.5'/%3E%3C/svg%3E"); --end-fill: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50.0 7.0A11.5 11.5 0 0 1 71.5 12.76A11.5 11.5 0 0 1 87.24 28.5A11.5 11.5 0 0 1 93.0 50.0A11.5 11.5 0 0 1 87.24 71.5A11.5 11.5 0 0 1 71.5 87.24A11.5 11.5 0 0 1 50.0 93.0A11.5 11.5 0 0 1 28.5 87.24A11.5 11.5 0 0 1 12.76 71.5A11.5 11.5 0 0 1 7.0 50.0A11.5 11.5 0 0 1 12.76 28.5A11.5 11.5 0 0 1 28.5 12.76A11.5 11.5 0 0 1 50.0 7.0z'/%3E%3C/svg%3E"); }
+:root[data-end="star"] { --end-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50.0 2.0L64.16 15.82L83.94 16.06L84.18 35.84L98.0 50.0L84.18 64.16L83.94 83.94L64.16 84.18L50.0 98.0L35.84 84.18L16.06 83.94L15.82 64.16L2.0 50.0L15.82 35.84L16.06 16.06L35.84 15.82z' fill='none' stroke='%23000' stroke-width='2.6' stroke-linejoin='round'/%3E%3Ccircle cx='50' cy='50' r='31' fill='none' stroke='%23000' stroke-width='1.8'/%3E%3Ccircle cx='64.16' cy='15.82' r='1.6'/%3E%3Ccircle cx='84.18' cy='35.84' r='1.6'/%3E%3Ccircle cx='84.18' cy='64.16' r='1.6'/%3E%3Ccircle cx='64.16' cy='84.18' r='1.6'/%3E%3Ccircle cx='35.84' cy='84.18' r='1.6'/%3E%3Ccircle cx='15.82' cy='64.16' r='1.6'/%3E%3Ccircle cx='15.82' cy='35.84' r='1.6'/%3E%3Ccircle cx='35.84' cy='15.82' r='1.6'/%3E%3C/svg%3E"); --end-fill: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50.0 2.0L64.16 15.82L83.94 16.06L84.18 35.84L98.0 50.0L84.18 64.16L83.94 83.94L64.16 84.18L50.0 98.0L35.84 84.18L16.06 83.94L15.82 64.16L2.0 50.0L15.82 35.84L16.06 16.06L35.84 15.82z'/%3E%3C/svg%3E"); }
+:root[data-end="diamond"] { --end-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50.0 1.0L99.0 50.0L50.0 99.0L1.0 50.0z' fill='none' stroke='%23000' stroke-width='2.8' stroke-linejoin='round'/%3E%3Cpath d='M50.0 9.0L91.0 50.0L50.0 91.0L9.0 50.0z' fill='none' stroke='%23000' stroke-width='1.5' stroke-linejoin='round'/%3E%3Ccircle cx='50.0' cy='5.0' r='0'/%3E%3Ccircle cx='95.0' cy='50.0' r='0'/%3E%3Ccircle cx='50.0' cy='95.0' r='0'/%3E%3Ccircle cx='5.0' cy='50.0' r='0'/%3E%3C/svg%3E"); --end-fill: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50.0 1.0L99.0 50.0L50.0 99.0L1.0 50.0z'/%3E%3C/svg%3E"); }
+:root[data-end="hex"] { --end-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50.0 2.0L91.57 26.0L91.57 74.0L50.0 98.0L8.43 74.0L8.43 26.0z' fill='none' stroke='%23000' stroke-width='2.8' stroke-linejoin='round'/%3E%3Cpath d='M50.0 9.0L85.51 29.5L85.51 70.5L50.0 91.0L14.49 70.5L14.49 29.5z' fill='none' stroke='%23000' stroke-width='1.5' stroke-linejoin='round'/%3E%3Ccircle cx='50.0' cy='15.0' r='1.5'/%3E%3Ccircle cx='80.31' cy='32.5' r='1.5'/%3E%3Ccircle cx='80.31' cy='67.5' r='1.5'/%3E%3Ccircle cx='50.0' cy='85.0' r='1.5'/%3E%3Ccircle cx='19.69' cy='67.5' r='1.5'/%3E%3Ccircle cx='19.69' cy='32.5' r='1.5'/%3E%3C/svg%3E"); --end-fill: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50.0 2.0L91.57 26.0L91.57 74.0L50.0 98.0L8.43 74.0L8.43 26.0z'/%3E%3C/svg%3E"); }
+:root[data-end="plain"] .ayah-end { width: auto; min-width: 1.2em; font-size: .68em; }
+:root[data-end="plain"] .ayah-end::before, :root[data-end="plain"] .ayah-end::after { display: none; }
 
-/* سمك الخط: الخط المصحفي بوزن واحد، فالعريض تثخين آلي والخفيف ترقيق بلون الخلفية */
+/* سمك الخط: الخط المصحفي بوزن واحد، فالعريض تثخين آلي من المتصفح */
 :root[data-weight="bold"] #rows { font-weight: bold; }
 :root[data-weight="bold"] .ayah-text { font-weight: bold; }
-:root[data-weight="light"] #rows .word, :root[data-weight="light"] .basmala { -webkit-text-stroke: .011em var(--bg); paint-order: stroke fill; }
 
 .sura-row { justify-content: center; }
 .sura-band {
@@ -295,7 +294,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .ayah-list { flex: 1; overflow: auto; display: flex; flex-direction: column; gap: .4em; padding: 3px; min-height: 0; }
 .panel button.ayah-item { display: flex; align-items: center; gap: .7em; text-align: right; flex: none; padding: .35em .7em; }
-.ayah-item .ayah-end { font-size: .78em; }
+.ayah-item .ayah-end { font-size: 1em; margin: 0 .5em; }
 .ayah-text {
   font-family: UthmanicHafs, "Amiri Quran", Amiri, serif; font-size: 1.3em; line-height: 1.9;
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;

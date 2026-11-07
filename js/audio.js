@@ -12,6 +12,8 @@ var Recite = (function () {
   var RECITERS = [
     { id: 'mansouri', name: 'كريم منصوري', note: 'إيران', mode: 'ayah', base: EVERYAYAH + 'Karim_Mansoori_40kbps/' },
     { id: 'parhizgar', name: 'شهريار پرهيزگار', note: 'إيران', mode: 'ayah', base: EVERYAYAH + 'Parhizgar_48kbps/' },
+    { id: 'abdulbasit', name: 'عبد الباسط عبد الصمد', note: 'مصر', mode: 'ayah', base: EVERYAYAH + 'Abdul_Basit_Murattal_192kbps/' },
+    { id: 'minshawi', name: 'محمد صديق المنشاوي', note: 'مصر', mode: 'ayah', base: EVERYAYAH + 'Minshawy_Murattal_128kbps/' },
     { id: 'shakernejad', name: 'حامد شاكر نجاد', note: 'مشهد', mode: 'surah', base: ARCHIVE + 'hamed-shaker-nejad/' },
     { id: 'karbalai', name: 'أسامة الكربلائي', note: 'كربلاء', mode: 'juz', base: ARCHIVE + KARBALAI }
   ];

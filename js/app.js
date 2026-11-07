@@ -19,13 +19,13 @@ var App = (function () {
     { id: 'sepia', label: 'ورق قديم' }
   ];
   var WEIGHTS = [
-    { id: 'light', label: 'خفيف' },
     { id: 'normal', label: 'عادي' },
     { id: 'bold', label: 'عريض' }
   ];
   var AYAH_ENDS = [
     { id: 'circle', label: 'دائرة' },
     { id: 'rose', label: 'وردة' },
+    { id: 'star', label: 'نجمة' },
     { id: 'diamond', label: 'معيّن' },
     { id: 'hex', label: 'سداسي' },
     { id: 'plain', label: 'رقم فقط' }
