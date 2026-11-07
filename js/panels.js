@@ -236,6 +236,29 @@ var Panels = (function () {
     if (first) first.focus();
   }
 
+  /* إعدادات الخط: تُطبَّق فوراً وتبقى النافذة مفتوحة */
+  function fontSettings(groups) {
+    var box = el('div', 'menu');
+    box.appendChild(el('h2', 'panel-title', 'إعدادات الخط'));
+    groups.forEach(function (g) {
+      box.appendChild(el('h3', 'tafsir-sec', g.title));
+      var row = el('div', 'tabs');
+      var buttons = g.items.map(function (it) {
+        var b = btn(it.label, function () {
+          buttons.forEach(function (x) { x.classList.remove('on'); });
+          b.classList.add('on');
+          it.fn();
+        });
+        b.classList.toggle('on', it.on);
+        row.appendChild(b);
+        return b;
+      });
+      box.appendChild(row);
+    });
+    box.appendChild(btn('إغلاق', close));
+    push(box, { cls: 'panel-mid' });
+  }
+
   /* البحث عن آية داخل سورة */
   function ayahSearch(surah, current, actions) {
     var box = el('div', 'index');
@@ -333,6 +356,7 @@ var Panels = (function () {
   }
 
   function tafsir(g) {
+    D.TAFSIR_SOURCES.sort(function (x, y) { return x.order - y.order; });
     // مصدر محفوظ قد لا يكون موجوداً في هذه النسخة من الموقع
     if (!D.TAFSIR_SOURCES.some(function (s) { return s.id === tafsirSource; })) tafsirSource = D.TAFSIR_SOURCES[0].id;
     var a = D.ayahOf(g);
@@ -582,7 +606,7 @@ var Panels = (function () {
 
   var api = {
     init: init, close: close, closeAll: closeAll, key: key, menu: menu, index: index, tafsir: tafsir,
-    ayahSearch: ayahSearch,
+    ayahSearch: ayahSearch, fontSettings: fontSettings,
     word: word, map: map, finish: finish,
     isOpen: function () { return stack.length > 0; },
     ayahTitle: ayahTitle

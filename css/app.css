@@ -191,6 +191,24 @@ button { font: inherit; color: inherit; cursor: pointer; }
   color: var(--gold); border: .09em double var(--gold); box-sizing: content-box;
   background: var(--gold-soft);
 }
+/* أشكال علامة نهاية الآية */
+:root[data-end="rose"] .ayah-end, :root[data-end="diamond"] .ayah-end, :root[data-end="hex"] .ayah-end {
+  position: relative; border-color: transparent; background: none;
+}
+:root[data-end="rose"] .ayah-end::before, :root[data-end="diamond"] .ayah-end::before, :root[data-end="hex"] .ayah-end::before {
+  content: ""; position: absolute; top: -14%; right: -14%; bottom: -14%; left: -14%; background: var(--gold); pointer-events: none;
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+}
+:root[data-end="rose"] .ayah-end::before { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 4l11 16 18-7 2 19 19 6-9 17 12 15-18 8 1 19-19-1-7 18-15-12-16 10-5-19-19-3 5-19-15-12 14-13-6-18 19-3 3-19 18 6z' fill='none' stroke='%23000' stroke-width='7'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 4l11 16 18-7 2 19 19 6-9 17 12 15-18 8 1 19-19-1-7 18-15-12-16 10-5-19-19-3 5-19-15-12 14-13-6-18 19-3 3-19 18 6z' fill='none' stroke='%23000' stroke-width='7'/%3E%3C/svg%3E"); }
+:root[data-end="diamond"] .ayah-end::before { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 3L97 50 50 97 3 50z' fill='none' stroke='%23000' stroke-width='7'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 3L97 50 50 97 3 50z' fill='none' stroke='%23000' stroke-width='7'/%3E%3C/svg%3E"); }
+:root[data-end="hex"] .ayah-end::before { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 3L91 26.500 91 73.500 50 97 9 73.500 9 26.500z' fill='none' stroke='%23000' stroke-width='7'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 3L91 26.500 91 73.500 50 97 9 73.500 9 26.500z' fill='none' stroke='%23000' stroke-width='7'/%3E%3C/svg%3E"); }
+:root[data-end="plain"] .ayah-end { border-color: transparent; background: none; font-size: .68em; width: auto; height: auto; min-width: 1em; }
+
+/* سمك الخط: الخط المصحفي بوزن واحد، فالعريض تثخين آلي والخفيف ترقيق بلون الخلفية */
+:root[data-weight="bold"] #rows { font-weight: bold; }
+:root[data-weight="bold"] .ayah-text { font-weight: bold; }
+:root[data-weight="light"] #rows .word, :root[data-weight="light"] .basmala { -webkit-text-stroke: .011em var(--bg); paint-order: stroke fill; }
+
 .sura-row { justify-content: center; }
 .sura-band {
   width: min(100%, 15em); height: 78%; display: flex; align-items: center; justify-content: center;
@@ -333,6 +351,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
   background: var(--panel); color: var(--ink); border: 1px solid var(--gold); border-radius: 12px;
   padding: .6em 1.2em; font-size: clamp(15px, 2.3vh, 26px); box-shadow: 0 8px 30px var(--shadow); animation: fade .2s;
 }
+#player {
+  position: fixed; bottom: clamp(44px, 7vh, 80px); left: 50%; transform: translateX(-50%); z-index: 9; max-width: 92vw;
+  display: flex; align-items: center; gap: .9em; background: var(--panel); color: var(--ink);
+  border: 1px solid var(--gold); border-radius: 999px; padding: .35em .5em .35em 1.2em;
+  font-size: clamp(14px, 2.2vh, 24px); box-shadow: 0 8px 30px var(--shadow); white-space: nowrap;
+}
+#playerLabel { overflow: hidden; text-overflow: ellipsis; }
+#playerStop { flex: none; background: var(--gold); color: var(--panel); border: none; border-radius: 999px; padding: .25em 1em; font-weight: 700; }
 #offline {
   position: fixed; bottom: clamp(10px, 1.8vh, 22px); left: 50%; transform: translateX(-50%); z-index: 9;
   background: var(--panel); color: var(--gold); border: 1px solid var(--line); border-radius: 999px;

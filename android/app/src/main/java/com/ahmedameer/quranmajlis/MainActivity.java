@@ -33,6 +33,7 @@ public class MainActivity extends Activity {
         settings.setAllowFileAccess(true);
         settings.setAllowFileAccessFromFileURLs(true);
         settings.setTextZoom(100);
+        settings.setMediaPlaybackRequiresUserGesture(false);
         web.setWebViewClient(new WebViewClient());
         setContentView(web);
 

@@ -18,6 +18,18 @@ var App = (function () {
     { id: 'light', label: 'كريمي كلاسيكي' },
     { id: 'sepia', label: 'ورق قديم' }
   ];
+  var WEIGHTS = [
+    { id: 'light', label: 'خفيف' },
+    { id: 'normal', label: 'عادي' },
+    { id: 'bold', label: 'عريض' }
+  ];
+  var AYAH_ENDS = [
+    { id: 'circle', label: 'دائرة' },
+    { id: 'rose', label: 'وردة' },
+    { id: 'diamond', label: 'معيّن' },
+    { id: 'hex', label: 'سداسي' },
+    { id: 'plain', label: 'رقم فقط' }
+  ];
   var MARK_STYLES = [
     { id: 'frame', label: 'إطار حول الآية' },
     { id: 'soft', label: 'خلفية هادئة' },
@@ -204,16 +216,59 @@ var App = (function () {
     toast(ayahMark ? 'تم تفعيل تحديد الآية' : 'تم إخفاء تحديد الآية');
   }
 
-  function openSize() {
-    var labels = { 15: 'صفحة كاملة (١٥ سطراً)', 12: 'كبير (١٢ سطراً)', 9: 'أكبر (٩ أسطر)', 7: 'كبير جداً (٧ أسطر)', 5: 'أقصى تكبير (٥ أسطر)' };
-    Panels.menu('حجم الخط', SIZES.map(function (n) {
+  function setWeight(id) {
+    document.documentElement.setAttribute('data-weight', id);
+    Store.write('weight', id);
+    Mushaf.relayout();
+  }
+
+  function setAyahEnd(id) {
+    document.documentElement.setAttribute('data-end', id);
+    Store.write('ayahEnd', id);
+    Mushaf.relayout();
+  }
+
+  function openFont() {
+    var root = document.documentElement;
+    Panels.fontSettings([
+      {
+        title: 'حجم الخط',
+        items: SIZES.map(function (n) {
+          return {
+            label: D.digits(n) + (n > 10 ? ' سطراً' : ' أسطر'), on: n === Mushaf.perScreen(), fn: function () {
+              Store.write('perScreen', n);
+              Mushaf.setPerScreen(n);
+            }
+          };
+        })
+      },
+      {
+        title: 'سمك الخط',
+        items: WEIGHTS.map(function (w) {
+          return { label: w.label, on: w.id === root.getAttribute('data-weight'), fn: function () { setWeight(w.id); } };
+        })
+      },
+      {
+        title: 'علامة نهاية الآية',
+        items: AYAH_ENDS.map(function (e) {
+          return { label: e.label, on: e.id === root.getAttribute('data-end'), fn: function () { setAyahEnd(e.id); } };
+        })
+      }
+    ]);
+  }
+
+  function openListen(g) {
+    var a = D.ayahOf(g);
+    Panels.menu('الاستماع إلى ' + Panels.ayahTitle(g), Recite.reciters.map(function (r) {
       return {
-        label: labels[n], primary: n === Mushaf.perScreen(), fn: function () {
-          Store.write('perScreen', n);
-          Mushaf.setPerScreen(n);
+        label: r.name + ' (' + r.note + ')' + (r.mode === 'ayah' ? '' : ' · بداية تقريبية'),
+        primary: r.id === Store.read('reciter', ''),
+        fn: function () {
+          Store.write('reciter', r.id);
+          Recite.play(r, g);
         }
       };
-    }), { text: 'تبقى فواصل الأسطر الحقيقية، ويتحرك العرض مع الآية داخل الصفحة.' });
+    }), { text: 'تحتاج التلاوة إلى اتصال بالإنترنت وقت الاستماع.' });
   }
 
   function goTo(g) {
@@ -295,12 +350,13 @@ var App = (function () {
     var g = Mushaf.current().g;
     Panels.menu(Panels.ayahTitle(g), [
       { label: 'تفسير الآية', primary: true, fn: function () { Panels.tafsir(g); } },
+      { label: 'استمع إلى الآية', fn: function () { openListen(g); } },
       { label: 'اختيار كلمة من الآية', fn: enterWordMode },
       { label: 'تمييز جذور الآية في السورة', fn: function () { markAyahRoots(g); } },
       { label: 'البحث عن آية في السورة', fn: function () { openSearch(); } },
       { label: 'الفهرس: سورة أو جزء', fn: function () { openIndex(); } },
       { label: 'خريطة الختمة', fn: openMap },
-      { label: 'حجم الخط', fn: openSize },
+      { label: 'إعدادات الخط', fn: openFont },
       { label: 'شكل تحديد الآية', fn: openMarkStyle },
       { label: 'وضع الألوان', fn: openTheme },
       { label: 'إنهاء الجلسة', fn: openFinish }
@@ -312,7 +368,8 @@ var App = (function () {
     index: function () { openIndex(); },
     search: function () { openSearch(); },
     map: openMap,
-    size: openSize,
+    size: openFont,
+    listen: function () { openListen(Mushaf.current().g); },
     mark: openMarkStyle,
     theme: openTheme,
     finish: openFinish
@@ -407,6 +464,9 @@ var App = (function () {
       case 'h':
         toggleAyahMark();
         break;
+      case 'l':
+        openListen(Mushaf.current().g);
+        break;
       default:
         return;
     }
@@ -420,6 +480,13 @@ var App = (function () {
     var knownTheme = THEMES.some(function (t) { return t.id === savedTheme; });
     document.documentElement.setAttribute('data-theme', knownTheme ? savedTheme : 'dark');
     syncThemeColor();
+    function savedChoice(key, list, fallback) {
+      var v = Store.read(key, fallback);
+      return list.some(function (x) { return x.id === v; }) ? v : fallback;
+    }
+    document.documentElement.setAttribute('data-weight', savedChoice('weight', WEIGHTS, 'normal'));
+    document.documentElement.setAttribute('data-end', savedChoice('ayahEnd', AYAH_ENDS, 'circle'));
+    Recite.init();
     Khatma.load();
     Panels.init();
     Panels.onBack = onRootBack;
@@ -502,7 +569,7 @@ var App = (function () {
     ], { text: 'سورة ' + a.surah.name + '، الآية ' + D.digits(a.ayah) + date });
   }
 
-  return { start: start };
+  return { start: start, toast: toast };
 })();
 
 if (QD.ready) App.start();

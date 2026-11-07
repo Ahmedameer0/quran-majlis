@@ -3,7 +3,7 @@
 كل آية تُبحث في النص بالترتيب، ولا تُقبل علامة الآية إلا إذا طابق رقمها الرقم المتوقع
 وطابق نصها رسم الآية نفسها، فلا يُنسب تفسير إلى غير آيته.
 
-الاستخدام: py -I -X utf8 tools/build_tafsir.py <jawami|majma|mizan> <source.txt> <uthmani.json> <out_dir>
+الاستخدام: py -I -X utf8 tools/build_tafsir.py <jawami|majma|mizan|amthal> <source.txt> <uthmani.json> <out_dir>
 """
 import difflib
 import json
@@ -31,6 +31,7 @@ def ayah_skeleton(s, a):
 
 ayahs = [(s['number'], a['numberInSurah'], ayah_skeleton(s, a)) for s in quran for a in s['ayahs']]
 
+AMTHAL_HEAD = '\x02'
 raw = open(src_path, encoding='utf8').read()
 raw = raw[raw.index('#META#Header#End#') + len('#META#Header#End#'):]
 raw = re.sub(r'PageV\d+P\d+', ' ', raw)
@@ -41,6 +42,11 @@ if source_id == 'mizan':
     raw = re.sub(r'^#+ ?الميزان في تفسير القر[آا]ن[ \d]*$', '', raw, flags=re.M)
     raw = raw.replace('\n~~', ' ')
     raw = re.sub(r'</?a\b[^>]*>', '', raw)
+if source_id == 'amthal':
+    # عناوين الأمثل تبقى أقساماً، و«~~» تتمة سطر
+    raw = re.sub(r'@QUR@\d+ ?', '', raw).replace('\ufeff', '')
+    raw = re.sub(r'^#+ ?\|+ ?(.*)$', lambda m: AMTHAL_HEAD + m.group(1), raw, flags=re.M)
+    raw = raw.replace('\n~~', ' ')
 raw = re.sub(r'^~~', '', raw, flags=re.M)
 raw = re.sub(r'^#+ ?(\| ?)*', '', raw, flags=re.M)
 raw = raw.replace('\u200d', '')
@@ -64,7 +70,9 @@ def similar(a, b):
 found = {}
 # مقدمة المحقق والمؤلف في مجمع البيان تسبق الفاتحة بكثير
 ptr = max(text.find('رب العالمين (2)') - 9000, 0) if source_id == 'majma' else 0
-for i, (s, a, sk) in enumerate(ayahs):
+if source_id == 'amthal':
+    ptr = text.index(AMTHAL_HEAD + 'سورة الحمد')
+for i, (s, a, sk) in enumerate(ayahs if source_id != 'amthal' else []):
     tail = max(len(sk) * 2 + 30, 60)
     # الآية القصيرة تتكرر في الشواهد، فلا يُبحث عنها إلا قريباً
     reach = WINDOW if len(sk) >= 25 else WINDOW // 12
@@ -112,7 +120,43 @@ def second_pass():
     found.update(extra)
 
 
-second_pass()
+
+
+def amthal_blocks():
+    """في الأمثل تأتي الآيات تحت عنوان «الآية» أو «الآيات» بلا أرقام، فتُطابَق برسمها بالترتيب."""
+    cur = 0
+    for m in re.finditer(AMTHAL_HEAD + r'(?:الآية|الآيات|الآيتان)[^\n]*\n', text):
+        end = text.find(AMTHAL_HEAD, m.end())
+        block = skeleton(text[m.end():end])
+        if len(block) < 3:
+            continue
+        probe = block[:16]
+        first = None
+        for i in range(cur, min(cur + 90, len(ayahs))):
+            # الآية القصيرة لا تكفي للمطابقة، فيُضم إليها ما بعدها
+            head = ''.join(x[2] for x in ayahs[i:i + 12])[:len(probe)]
+            if head and similar(head, probe) > .8:
+                first = i
+                break
+        if first is None:
+            continue
+        last = first
+        size = len(ayahs[first][2])
+        # تُضم الآية التالية ما دام طول الآيات يقترب من طول النص، ولا يُتجاوز آخر السورة
+        while (last + 1 < len(ayahs) and ayahs[last + 1][0] == ayahs[first][0]
+               and abs(size + len(ayahs[last + 1][2]) - len(block)) < abs(size - len(block))):
+            last += 1
+            size += len(ayahs[last][2])
+        for k in range(first, last):
+            found[k] = (m.start(), m.start())
+        found[last] = (m.start(), end)
+        cur = last + 1
+
+
+if source_id == 'amthal':
+    amthal_blocks()
+else:
+    second_pass()
 print('matched', len(found), 'of', len(ayahs))
 missing = [ayahs[i][:2] for i in range(len(ayahs)) if i not in found]
 per = {}
@@ -156,9 +200,28 @@ def mizan_sections(t):
     return [r for r in res if r[1]]
 
 
+AMTHAL_SKIP = {'الآية', 'الآيات', 'الآيتان', 'التفسير', 'مكية', 'مدنية'}
+
+
+def amthal_sections(t):
+    res = [['', '']]
+    for para in re.split(r'\s*\n\s*', t):
+        if para.startswith(AMTHAL_HEAD):
+            head = para[1:].strip()
+            if head.startswith('EDITOR'):  # حواشي الكتاب مجموعة بعد آخر سورة
+                break
+            if head not in AMTHAL_SKIP:
+                res.append([head, ''])
+        elif para:
+            res[-1][1] = (res[-1][1] + '\n' + para).strip()
+    return [r for r in res if r[1]]
+
+
 def sections(t):
     if source_id == 'mizan':
         return mizan_sections(t)
+    if source_id == 'amthal':
+        return amthal_sections(t)
     if source_id != 'majma':
         return [['', re.sub(r'\s*\n\s*', ' ', t)]]
     ms = list(SECT.finditer(t))
@@ -207,6 +270,8 @@ for s, gs in by_surah.items():
     for g in gs:
         body = re.sub(r'^[\])\s.،]*(?:\*(?! ?\())?[\s.،]*', '', g[3])
         body = NEXT_SURAH.split(body)[0]
+        if source_id == 'amthal':
+            body = re.split(AMTHAL_HEAD + r'سورة ', body)[0]
         if source_id == 'mizan':
             body = re.split(r'\n\s*\(سورة [^\n)]{2,70}\)', body)[0]
             body = re.sub(r'\s*\*\s*\*\s*\*[^*]{0,120}$', '', body)  # فاصل المقطع التالي

@@ -6,8 +6,8 @@ var QD = (function () {
   var tafsirs = {};
 
   D.TAFSIR_SOURCES = [
-    { id: 'jawami', name: 'جوامع الجامع', author: 'الشيخ الطبرسي (ت 548هـ)', note: 'تفسير موجز' },
-    { id: 'majma', name: 'مجمع البيان', author: 'الشيخ الطبرسي (ت 548هـ)', note: 'تفسير مفصّل' }
+    { id: 'jawami', order: 1, name: 'جوامع الجامع', author: 'الشيخ الطبرسي (ت 548هـ)', note: 'تفسير موجز' },
+    { id: 'majma', order: 4, name: 'مجمع البيان', author: 'الشيخ الطبرسي (ت 548هـ)', note: 'تفسير مفصّل' }
   ];
 
   D.init = function (raw) {

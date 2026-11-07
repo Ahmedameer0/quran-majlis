@@ -19,7 +19,7 @@ for folder, dirs, names in os.walk(ROOT):
             continue
         full = os.path.join(folder, name)
         rel = os.path.relpath(full, ROOT).replace(os.sep, '/')
-        if rel == 'data/local-sources.js' or rel.startswith('data/tafsir/mizan/'):  # لا تُنشر
+        if rel == 'data/local-sources.js' or rel.startswith(('data/tafsir/mizan/', 'data/tafsir/amthal/')):  # لا تُنشر
             continue
         with open(full, 'rb') as f:
             files[rel] = hashlib.sha256(f.read()).hexdigest()[:10]
