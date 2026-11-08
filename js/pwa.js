@@ -24,6 +24,16 @@
     }
   });
 
+  // نسخة جديدة تسلّمت الصفحة: تُعرض فوراً إن كانت الصفحة فُتحت للتو، وإلا لا يُقاطَع القارئ
+  var RELOAD_WINDOW = 30000;
+  var openedAt = Date.now();
+  var wasControlled = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', function () {
+    if (!wasControlled) return;  // أول تثبيت وليس تحديثاً
+    if (Date.now() - openedAt < RELOAD_WINDOW) location.reload();
+    else show('نسخة جديدة جاهزة، وستظهر عند فتح الموقع مرة أخرى');
+  });
+
   window.addEventListener('load', function () {
     navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).catch(function () {});
     navigator.serviceWorker.ready.then(function (reg) {
