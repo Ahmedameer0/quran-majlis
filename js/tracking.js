@@ -174,7 +174,8 @@ var Tracking = (function () {
   }
 
   return {
-    supported: !!Recognition,
+    // في تطبيق التلفزيون لا يُعرض حتى تثبت التجارب دقته
+    supported: !!Recognition && !window.AndroidApp,
     init: function (h) { hooks = h; },
     start: start,
     stop: stop,

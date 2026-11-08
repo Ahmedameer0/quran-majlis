@@ -88,7 +88,12 @@ var App = (function () {
 
   function onMove(g, page) {
     // تنقل يدوي أثناء التتبع: يبدأ البحث من الموضع الجديد
-    if (!trackingMove) Tracking.syncTo(g);
+    if (!trackingMove) {
+      Tracking.syncTo(g);
+      // تصحيح يدوي أثناء التتبع يُحتسب في إحصاء التجربة
+      if (trackStats && Tracking.isListening() && g !== trackStats.lastG) trackStats.fixes++;
+    }
+    if (trackStats) trackStats.lastG = g;
     var a = D.ayahOf(g);
     D.fillSurahName(document.getElementById('barSurah'), a.surah);
     document.getElementById('barMeta').textContent =
@@ -298,6 +303,7 @@ var App = (function () {
   /* ───────── التتبع الصوتي (تجريبي) ───────── */
 
   var trackingMove = false;
+  var trackStats = null;   // انتقالات التتبع وتصحيحات الأسهم في التجربة الحالية
   var TRACK_MARK_MAX = 3;   // الانتقال لآيات قليلة تالية يُحسب قراءة لما بينها
 
   function trackMove(g) {
@@ -305,6 +311,7 @@ var App = (function () {
     if (g > cur && g - cur <= TRACK_MARK_MAX) {
       for (var x = cur; x < g; x++) onAdvance(x);
     }
+    if (trackStats) trackStats.moves++;
     trackingMove = true;
     Mushaf.show(g);
     trackingMove = false;
@@ -319,6 +326,7 @@ var App = (function () {
       Tracking.stop();
       return;
     }
+    trackStats = { moves: 0, fixes: 0, started: Date.now(), lastG: Mushaf.current().g };
     document.getElementById('voice').hidden = false;
     document.getElementById('voiceLabel').textContent = 'يستمع… ابدأ القراءة';
     document.querySelector('[data-act="voice"]').setAttribute('aria-pressed', 'true');
@@ -588,6 +596,13 @@ var App = (function () {
       stopped: function () {
         document.getElementById('voice').hidden = true;
         document.querySelector('[data-act="voice"]').setAttribute('aria-pressed', 'false');
+        if (!trackStats) return;
+        var s = trackStats, total = s.moves + s.fixes;
+        var minutes = Math.max(1, Math.round((Date.now() - s.started) / 60000));
+        toast('التتبع خلال ' + D.digits(minutes) + ' دقيقة: ' + D.digits(s.moves) + ' انتقالاً تلقائياً، و' +
+          D.digits(s.fixes) + ' تصحيحاً يدوياً' +
+          (total ? ' · نسبة الانتقالات التلقائية ' + D.digits(Math.round(s.moves / total * 100)) + '٪' : ''));
+        trackStats = null;
       },
       error: toast
     });
