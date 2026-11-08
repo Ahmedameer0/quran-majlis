@@ -194,7 +194,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .word { cursor: pointer; border-radius: 6px; transition: color .25s; touch-action: manipulation; }
 .word:hover { color: var(--gold); }
 .word.rootmark { color: var(--root); text-shadow: 0 0 .4em color-mix(in srgb, var(--root) 35%, transparent); }
-.word.reading { color: var(--gold); text-decoration: underline; text-decoration-color: var(--gold); text-decoration-thickness: .05em; text-underline-offset: .35em; }
 .word.cursor { outline: 2px solid var(--gold); outline-offset: 4px; background: var(--gold-soft); }
 
 /* علامة نهاية الآية: الزخرفة قناع يتلون بلون الوضع المختار */
