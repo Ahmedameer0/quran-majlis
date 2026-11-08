@@ -194,6 +194,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .word { cursor: pointer; border-radius: 6px; transition: color .25s; touch-action: manipulation; }
 .word:hover { color: var(--gold); }
 .word.rootmark { color: var(--root); text-shadow: 0 0 .4em color-mix(in srgb, var(--root) 35%, transparent); }
+.word.reading { color: var(--gold); text-decoration: underline; text-decoration-color: var(--gold); text-decoration-thickness: .05em; text-underline-offset: .35em; }
 .word.cursor { outline: 2px solid var(--gold); outline-offset: 4px; background: var(--gold-soft); }
 
 /* علامة نهاية الآية: الزخرفة قناع يتلون بلون الوضع المختار */
@@ -369,15 +370,21 @@ button { font: inherit; color: inherit; cursor: pointer; }
   border: 1px solid var(--gold); border-radius: 999px; padding: .35em .5em .35em 1.2em;
   font-size: clamp(14px, 2.2vh, 24px); box-shadow: 0 8px 30px var(--shadow); white-space: nowrap;
 }
+/* شريط التتبع الصوتي داخل الشريط العلوي، فلا يغطي الآيات */
 #voice {
-  position: fixed; bottom: clamp(92px, 14vh, 150px); left: 50%; transform: translateX(-50%); z-index: 9; max-width: 92vw;
-  display: flex; align-items: center; gap: .9em; background: var(--panel); color: var(--ink);
-  border: 1px dashed var(--gold); border-radius: 999px; padding: .3em .5em .3em 1.2em;
-  font-size: clamp(13px, 2vh, 22px); white-space: nowrap; opacity: .9;
+  flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: .5em; margin: 0 1vw;
+  border: 1px dashed var(--line); border-radius: 999px; padding: .15em .3em .15em .8em;
+  font-size: clamp(12px, 1.9vh, 20px); color: var(--ink); white-space: nowrap;
 }
+#bar:has(#voice:not([hidden])) .bar-meta { display: none; }  /* مساحة أوسع لنص الاستماع */
+#voice { min-width: 14em; }
 #voice.interim #voiceLabel { color: var(--ink-soft); }
-#voiceLabel { overflow: hidden; text-overflow: ellipsis; max-width: 70vw; }
-#voiceStop { flex: none; background: var(--gold); color: var(--panel); border: none; border-radius: 999px; padding: .2em 1em; font-weight: 700; }
+#voiceLabel { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+#voiceConf { flex: none; width: .7em; height: .7em; border-radius: 50%; background: var(--ink-soft); }
+#voiceConf.high { background: #3cb371; }
+#voiceConf.mid { background: #e0b43c; }
+#voiceConf.low { background: #d9534f; }
+#voiceStop { flex: none; background: var(--gold); color: var(--panel); border: none; border-radius: 999px; padding: .15em .9em; font-weight: 700; }
 .bar-actions button[data-act="voice"][aria-pressed="true"] { color: var(--gold); }
 #playerLabel { overflow: hidden; text-overflow: ellipsis; }
 #playerStop { flex: none; background: var(--gold); color: var(--panel); border: none; border-radius: 999px; padding: .25em 1em; font-weight: 700; }

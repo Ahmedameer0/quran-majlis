@@ -190,6 +190,8 @@ var Mushaf = (function () {
       var on = marked && s.dataset.r !== undefined && marked[s.dataset.r];
       s.classList.toggle('rootmark', !!on);
       s.classList.toggle('cursor', !!cursor && +s.dataset.g === cursor.g && +s.dataset.i === cursor.i);
+      var r = state.reading;
+      s.classList.toggle('reading', !!r && +s.dataset.g === r.g && +s.dataset.i === r.i);
     });
   }
 
@@ -306,6 +308,30 @@ var Mushaf = (function () {
     });
   }
 
+  // الكلمة التي وصل إليها التتبع الصوتي؛ تُكشف الأسطر التالية قبل أن يبلغ القارئ آخر سطر ظاهر
+  function setReading(g, i) {
+    state.reading = g === null ? null : { g: g, i: i };
+    if (state.reading) {
+      for (var p = D.ayahPage[g]; p <= D.ayahLastPage[g]; p++) {
+        var here = D.pages[p - 1].some(function (r) {
+          return isWordRow(r) && r.some(function (w) { return w[0] === g && w[1] === i; });
+        });
+        if (here) {
+          if (p !== state.page) show(g, p);
+          break;
+        }
+      }
+    }
+    paintMarks();
+    var s = state.reading && rowsEl.querySelector('.word[data-g="' + g + '"][data-i="' + i + '"]');
+    if (!s) return;
+    var row = Math.floor((s.offsetTop + s.offsetHeight / 2) / state.rowH);
+    if (row >= state.top + state.perScreen - 1 && state.top < maxTop()) {
+      state.top = clampTop(row - 1);
+      applyTop();
+    }
+  }
+
   function findWord(g, i) {
     var res = null;
     D.pages[state.page - 1].forEach(function (r) {
@@ -364,7 +390,7 @@ var Mushaf = (function () {
 
   return {
     init: init, show: show, next: next, prev: prev, setPerScreen: setPerScreen, relayout: relayout,
-    setRoots: setRoots, setCursor: setCursor, wordsOfAyah: wordsOfAyah, findWord: findWord,
+    setRoots: setRoots, setCursor: setCursor, setReading: setReading, wordsOfAyah: wordsOfAyah, findWord: findWord,
     current: function () { return { g: state.g, page: state.page }; },
     perScreen: function () { return state.perScreen; }
   };

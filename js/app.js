@@ -306,15 +306,34 @@ var App = (function () {
   var trackStats = null;   // انتقالات التتبع وتصحيحات الأسهم في التجربة الحالية
   var TRACK_MARK_MAX = 3;   // الانتقال لآيات قليلة تالية يُحسب قراءة لما بينها
 
-  function trackMove(g) {
+  function trackMove(g, word) {
     var cur = Mushaf.current().g;
-    if (g > cur && g - cur <= TRACK_MARK_MAX) {
-      for (var x = cur; x < g; x++) onAdvance(x);
-    }
-    if (trackStats) trackStats.moves++;
     trackingMove = true;
-    Mushaf.show(g);
+    if (g !== cur) {
+      if (g > cur && g - cur <= TRACK_MARK_MAX) {
+        for (var x = cur; x < g; x++) onAdvance(x);
+      }
+      if (trackStats) trackStats.moves++;
+      Mushaf.show(g);
+    }
+    Mushaf.setReading(g, word);
     trackingMove = false;
+  }
+
+  function copyTrackingLog() {
+    var text = Tracking.logText();
+    var done = function () { toast('نُسخ سجل التتبع، ويمكنك لصقه في رسالة'); };
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(done, function () { toast('تعذر النسخ'); });
+      return;
+    }
+    var area = document.createElement('textarea');
+    area.value = text;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    area.remove();
+    done();
   }
 
   function toggleVoice() {
@@ -327,6 +346,7 @@ var App = (function () {
       return;
     }
     trackStats = { moves: 0, fixes: 0, started: Date.now(), lastG: Mushaf.current().g };
+    document.getElementById('voiceConf').className = 'mid';
     document.getElementById('voice').hidden = false;
     document.getElementById('voiceLabel').textContent = 'يستمع… ابدأ القراءة';
     document.querySelector('[data-act="voice"]').setAttribute('aria-pressed', 'true');
@@ -444,6 +464,7 @@ var App = (function () {
       { label: 'تفسير الآية', primary: true, fn: function () { Panels.tafsir(g); } },
       { label: 'استمع إلى الآية', fn: function () { openListen(g); } },
       { label: Tracking.isListening() ? 'إيقاف التتبع الصوتي' : 'التتبع الصوتي للقراءة (تجريبي)', fn: toggleVoice },
+    ].concat(Tracking.hasLog() ? [{ label: 'نسخ سجل التتبع', fn: copyTrackingLog }] : []).concat([
       { label: 'اختيار كلمة من الآية', fn: enterWordMode },
       { label: 'تمييز جذور الآية في السورة', fn: function () { markAyahRoots(g); } },
       { label: 'البحث عن آية في السورة', fn: function () { openSearch(); } },
@@ -453,7 +474,7 @@ var App = (function () {
       { label: 'شكل تحديد الآية', fn: openMarkStyle },
       { label: 'وضع الألوان', fn: openTheme },
       { label: 'إنهاء الجلسة', fn: openFinish }
-    ]);
+    ]));
   }
 
   var ACTIONS = {
@@ -589,12 +610,15 @@ var App = (function () {
     Tracking.init({
       current: function () { return Mushaf.current().g; },
       move: trackMove,
-      status: function (text, interim) {
-        document.getElementById('voiceLabel').textContent = text ? '🎙 ' + text : 'يستمع… ابدأ القراءة';
+      paused: function () { return Recite.isPlaying(); },
+      status: function (text, interim, level) {
+        document.getElementById('voiceLabel').textContent = text || 'يستمع… ابدأ القراءة';
         document.getElementById('voice').classList.toggle('interim', interim);
+        document.getElementById('voiceConf').className = level;
       },
       stopped: function () {
         document.getElementById('voice').hidden = true;
+        Mushaf.setReading(null);
         document.querySelector('[data-act="voice"]').setAttribute('aria-pressed', 'false');
         if (!trackStats) return;
         var s = trackStats, total = s.moves + s.fixes;
